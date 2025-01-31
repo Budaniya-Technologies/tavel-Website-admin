@@ -1,0 +1,25 @@
+/* sidebar.css */
+.MuiDrawer-paper {
+    transition: all 0.3s ease; /* Smooth transition for opening/closing */
+  }
+  
+  .MuiDrawer-paper.MuiDrawer-paperAnchorLeft {
+    width: 240px; /* Width when sidebar is open */
+  }
+  
+  .MuiDrawer-paper.MuiDrawer-paperAnchorLeft.MuiDrawer-paperClose {
+    width: 60px; /* Width when sidebar is closed */
+  }
+  
+  .MuiListItemText-root {
+    display: inline-block; /* Ensure text and icon align horizontally */
+  }
+  
+  .MuiListItemIcon-root {
+    min-width: 50px; /* Align icons properly */
+  }
+  
+  .MuiDrawer-paper.MuiDrawer-paperAnchorLeft .MuiListItemText-root {
+    display: none; /* Hide text when sidebar is closed */
+  }
+  
