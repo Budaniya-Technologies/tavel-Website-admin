@@ -1,79 +1,71 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Snackbar,
-  CircularProgress,
-  Paper,
-  Grid,
-  IconButton,
-} from '@mui/material';
-import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Box, TextField, Button, CircularProgress, Paper, Grid } from '@mui/material';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { apiPost } from '../../../utils/http';
+
+const AddPackageAPI = 'apiAdmin/v1/package/addPackage';
 
 const AddPackage = () => {
-  const [packageName, setPackageName] = useState('');
+  const navigate = useNavigate();
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('');
-  const [chargeRanges, setChargeRanges] = useState([
-    { lowerLimit: '', upperLimit: '', chargeType: '', charge: '' },
-  ]);
+  const [price, setPrice] = useState('');
+  const [duration, setDuration] = useState('');
+  const [pickUpPoint, setPickUpPoint] = useState('');
+  const [dropPoint, setDropPoint] = useState('');
+  const [image, setImage] = useState('');
+  const [pdf, setPdf] = useState('');
+  const [slug, setSlug] = useState('');
+  const [slugContent, setSlugContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-
-  const handleAddChargeRange = () => {
-    setChargeRanges([
-      ...chargeRanges,
-      { lowerLimit: '', upperLimit: '', chargeType: '', charge: '' },
-    ]);
-  };
-
-  const handleRemoveChargeRange = (index) => {
-    const newChargeRanges = chargeRanges.filter((_, i) => i !== index);
-    setChargeRanges(newChargeRanges);
-  };
-
-  const handleChargeRangeChange = (e, index) => {
-    const { name, value } = e.target;
-    const newChargeRanges = [...chargeRanges];
-    newChargeRanges[index][name] = value;
-    setChargeRanges(newChargeRanges);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const newPackage = {
-        packageName,
-        description,
-        status,
-        chargeRanges,
-      };
+    const packageData = {
+      title,
+      description,
+      price,
+      duration,
+      pickUpPoint,
+      dropPoint,
+      image,
+      pdf,
+      slug,
+      slugContent,
+    };
 
-      console.log('Package Created:', newPackage);
-      setSuccess(true);
-      setError('');
+    try {
+      const response = await apiPost(AddPackageAPI, packageData);
+
+      console.log('API Response:', response.data);
+      toast.success('Package created successfully!', { position: 'top-right', autoClose: 3000 });
+
+      setTimeout(() => {
+        navigate('/packages/view-all');
+      }, 3000); // Navigate after 3 seconds
     } catch (err) {
-      setError('Failed to create package. Please try again.');
+      console.error('API Error:', err);
+      toast.error('Failed to create package. Please try again.', { position: 'top-right', autoClose: 3000 });
     } finally {
       setLoading(false);
-      setOpenSnackbar(true);
     }
   };
 
   const handleCancel = () => {
-    setPackageName('');
+    setTitle('');
     setDescription('');
-    setStatus('');
-    setChargeRanges([{ lowerLimit: '', upperLimit: '', chargeType: '', charge: '' }]);
+    setPrice('');
+    setDuration('');
+    setPickUpPoint('');
+    setDropPoint('');
+    setImage('');
+    setPdf('');
+    setSlug('');
+    setSlugContent('');
   };
 
   return (
@@ -83,131 +75,130 @@ const AddPackage = () => {
         margin: 'auto',
         padding: 3,
         boxShadow: 3,
-        marginTop: '100px',
+        marginTop: '60px',
         backgroundColor: '#fff',
       }}
     >
-      <h2 style={{ paddingBottom: '20px', textAlign: 'center', fontSize: '2rem' }}>Create Package</h2>
+      <h2 style={{ textAlign: 'center', color: 'rgb(63, 81, 181)', fontWeight: 'bold', fontSize: '2rem' }}>Create Package</h2>
 
       <Paper sx={{ padding: 3 }}>
         <form onSubmit={handleSubmit}>
-          <TextField
-            label="Package Name"
-            variant="outlined"
-            fullWidth
-            value={packageName}
-            onChange={(e) => setPackageName(e.target.value)}
-            sx={{ marginBottom: '20px' }}
-          />
-
-          <TextField
-            label="Description"
-            variant="outlined"
-            fullWidth
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            sx={{ marginBottom: '20px' }}
-          />
-
-          <FormControl fullWidth sx={{ marginBottom: '20px' }}>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              label="Status"
-            >
-              <MenuItem value="Active">Active</MenuItem>
-              <MenuItem value="Inactive">Inactive</MenuItem>
-            </Select>
-          </FormControl>
-
-          <h3>Charge Ranges</h3>
-
-          {chargeRanges.map((chargeRange, index) => (
-            <Box key={index} sx={{ marginBottom: '15px' }}>
-              <Grid container spacing={2}>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Lower Limit"
-                    variant="outlined"
-                    fullWidth
-                    name="lowerLimit"
-                    value={chargeRange.lowerLimit}
-                    onChange={(e) => handleChargeRangeChange(e, index)}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Upper Limit"
-                    variant="outlined"
-                    fullWidth
-                    name="upperLimit"
-                    value={chargeRange.upperLimit}
-                    onChange={(e) => handleChargeRangeChange(e, index)}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Charge Type"
-                    variant="outlined"
-                    fullWidth
-                    name="chargeType"
-                    value={chargeRange.chargeType}
-                    onChange={(e) => handleChargeRangeChange(e, index)}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="Charge"
-                    variant="outlined"
-                    fullWidth
-                    name="charge"
-                    value={chargeRange.charge}
-                    onChange={(e) => handleChargeRangeChange(e, index)}
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  {chargeRanges.length > 1 && (
-                    <IconButton onClick={() => handleRemoveChargeRange(index)} color="error">
-                      <RemoveCircleOutline />
-                    </IconButton>
-                  )}
-                </Grid>
-              </Grid>
-            </Box>
-          ))}
-
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={handleAddChargeRange}
-            sx={{ marginBottom: '20px' }}
-          >
-            Add Charge Range
-          </Button>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Package Name"
+                variant="outlined"
+                fullWidth
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Description"
+                variant="outlined"
+                fullWidth
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Price"
+                variant="outlined"
+                fullWidth
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Duration"
+                variant="outlined"
+                fullWidth
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Pick Up Point"
+                variant="outlined"
+                fullWidth
+                value={pickUpPoint}
+                onChange={(e) => setPickUpPoint(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Drop Point"
+                variant="outlined"
+                fullWidth
+                value={dropPoint}
+                onChange={(e) => setDropPoint(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Image URL"
+                variant="outlined"
+                fullWidth
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="PDF URL"
+                variant="outlined"
+                fullWidth
+                value={pdf}
+                onChange={(e) => setPdf(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Slug"
+                variant="outlined"
+                fullWidth
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Slug Content"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={3}
+                value={slugContent}
+                onChange={(e) => setSlugContent(e.target.value)}
+                sx={{ marginBottom: '20px' }}
+              />
+            </Grid>
+          </Grid>
 
           {loading ? (
             <CircularProgress />
           ) : (
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button variant="contained" color="primary" type="submit">
-                Submit
-              </Button>
-              <Button variant="outlined" color="secondary" onClick={handleCancel}>
-                Cancel
-              </Button>
+              <Button variant="contained" color="primary" type="submit">Submit</Button>
+              <Button variant="outlined" color="secondary" onClick={handleCancel}>Cancel</Button>
             </Box>
           )}
         </form>
       </Paper>
-
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={3000}
-        onClose={() => setOpenSnackbar(false)}
-        message={error || (success ? 'Package created successfully!' : '')}
-        severity={error ? 'error' : 'success'}
-      />
     </Box>
   );
 };

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { TextField, Button, Typography, Grid, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { apiPost } from "../../utils/http";
+
+const ApiRegister = "apiSuper/v1/user/register";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -11,36 +13,23 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    secureKey: "",
   });
 
-  const [errors, setErrors] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [errors, setErrors] = useState({});
 
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: "" });
   };
 
-  // Form validation function
+  // Validate form fields
   const validateForm = () => {
     let newErrors = {};
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full Name is required";
-    }
-
+    if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -49,13 +38,15 @@ const Register = () => {
 
     if (!formData.password.trim()) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
+
+    if (!formData.secureKey.trim()) newErrors.secureKey = "Secure Key is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -65,13 +56,18 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
+      const payload = {
+        websiteLinked: "6791ddd50785d8a01dadae3b",
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        secureKey: formData.secureKey,
+      };
+
       try {
-        const response = await axios.post(
-          "http://localhost:5001/apiAdmin/v1/user/addUser",
-          formData
-        );
-        if (response.data.success) {
-          toast.success("Signup successful");
+        const response = await apiPost(ApiRegister, payload);
+        if (response.data.statusCode === 201) {
+          toast.success("User Created Successfully!");
           navigate("/login");
         } else {
           toast.error(response.data.message || "Signup failed");
@@ -110,39 +106,8 @@ const Register = () => {
           background: "linear-gradient(to right, #ffffff, #f8f9fa)",
         }}
       >
-        <Paper
-          elevation={6}
-          sx={{
-            padding: "50px",
-            maxWidth: "420px",
-            textAlign: "center",
-            borderRadius: "10px",
-            backgroundColor: "white",
-            boxShadow: "0px 10px 40px rgba(0, 0, 0, 0.2)",
-            position: "relative",
-          }}
-        >
-          {/* Company Logo */}
-          <img
-            src="https://cdni.iconscout.com/illustration/premium/thumb/log-in-illustration-download-svg-png-gif-file-formats--login-form-user-social-media-register-sign-up-app-registration-or-pack-interface-illustrations-3723263.png?f=webp"
-            alt="Company Logo"
-            style={{
-              width: "100px",
-              position: "absolute",
-              top: "-50px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              borderRadius: "50%",
-              border: "5px solid white",
-              backgroundColor: "white",
-              boxShadow: "0px 5px 20px rgba(0,0,0,0.2)",
-            }}
-          />
-
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: "bold", color: "#333", mt: 6, mb: 3 }}
-          >
+        <Paper elevation={6} sx={{ padding: "50px", maxWidth: "420px", textAlign: "center" }}>
+          <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333", mt: 2, mb: 3 }}>
             Create an Account
           </Typography>
 
@@ -166,6 +131,17 @@ const Register = () => {
               onChange={handleChange}
               error={!!errors.email}
               helperText={errors.email}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Secure Key"
+              name="secureKey"
+              value={formData.secureKey}
+              onChange={handleChange}
+              error={!!errors.secureKey}
+              helperText={errors.secureKey}
               fullWidth
               margin="normal"
             />
@@ -205,29 +181,11 @@ const Register = () => {
                 background: "linear-gradient(to right, #1976D2, #0044ff)",
                 color: "#fff",
                 fontWeight: "bold",
-                transition: "0.3s",
-                "&:hover": {
-                  background: "linear-gradient(to right, #0044ff, #1976D2)",
-                },
               }}
             >
               Sign Up
             </Button>
           </form>
-
-          <Typography variant="body2" sx={{ color: "#555", mt: 2 }}>
-            Already have an account?{" "}
-            <a
-              href="/login"
-              style={{
-                color: "#1976D2",
-                fontWeight: "bold",
-                textDecoration: "none",
-              }}
-            >
-              Login
-            </a>
-          </Typography>
         </Paper>
       </Grid>
     </Grid>

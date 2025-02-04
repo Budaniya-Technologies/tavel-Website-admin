@@ -1,6 +1,7 @@
 import { axiosInstance } from "./axiosInstance";
 
 const GetAPI = async (url) => {
+  
   const headers = {
     "Content-Type": "application/json",
   };

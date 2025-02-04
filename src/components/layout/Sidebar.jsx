@@ -7,14 +7,16 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ReceiptIcon from '@mui/icons-material/Receipt';
+// import ReceiptIcon from '@mui/icons-material/Receipt';
+import ArticleIcon from '@mui/icons-material/Article'; 
 import { useTheme } from '@mui/material/styles';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const theme = useTheme();
   const [openUsers, setOpenUsers] = useState(false);
   const [openPackages, setOpenPackages] = useState(false);
-  const [openOrders, setOpenOrders] = useState(false); 
+  const [openBlogs, setOpenBlogs] = useState(false); 
+  // const [openOrders, setOpenOrders] = useState(false); 
   const [openSettings, setOpenSettings] = useState(false); 
 
   return (
@@ -87,7 +89,24 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </ul>
         )}
 
-        <div onClick={() => setOpenOrders(!openOrders)} style={dropdownStyle}>
+         {/* Blogs Section */}
+         <div onClick={() => setOpenBlogs(!openBlogs)} style={dropdownStyle}>
+          <ArticleIcon style={iconStyle} />
+          {isOpen && <span>Blogs</span>}
+          {isOpen && (openBlogs ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+        </div>
+        {openBlogs && isOpen && (
+          <ul style={nestedListStyle}>
+            <li>
+              <Link to="/blogs/view-all" style={nestedLinkStyle}>View All Blogs</Link>
+            </li>
+            <li>
+              <Link to="/blogs/add" style={nestedLinkStyle}>Add Blog</Link>
+            </li>
+          </ul>
+        )}
+
+        {/* <div onClick={() => setOpenOrders(!openOrders)} style={dropdownStyle}>
           <ReceiptIcon style={iconStyle} />
           {isOpen && <span>Orders</span>}
           {isOpen && (openOrders ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
@@ -102,7 +121,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <Link to="/orders/add" style={nestedLinkStyle}>Add Order</Link>
             </li>
           </ul>
-        )}
+        )} */}
 
         <div onClick={() => setOpenSettings(!openSettings)} style={dropdownStyle}>
           <SettingsIcon style={iconStyle} />

@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { TextField, Button, Typography, Grid, Paper, Checkbox, FormControlLabel } from '@mui/material';
+import { TextField, Button, Typography, Grid, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { apiPost } from "../../utils/http";
+import { apiPost } from "../../utils/http"; // Your custom API utility
+import imgLogo from "../../assets/Images/thebagPacker-logo.png";
 
-const API_ENDPOINT = `/apiAdmin/v1/user/login`;
+const API_ADMIN_ENDPOINT = 'apiAdmin/v1/user/login'; 
 
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false,
   });
 
   const [errors, setErrors] = useState({
@@ -21,10 +21,10 @@ const Login = () => {
 
   // Handle input changes
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     });
     setErrors({
       ...errors,
@@ -51,16 +51,22 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
+  // Handle form submission and API call
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await apiPost(API_ENDPOINT, formData);
-        if (response.data.success) {
+        const response = await apiPost(API_ADMIN_ENDPOINT, {
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (response.data.message === "Success") {
           toast.success('Login successful');
-          localStorage.setItem('token', response.data.accessToken);
-          navigate('/dashboard');
+          localStorage.setItem('token', response.data.data.accessToken);
+          localStorage.setItem('refreshToken', response.data.data.refreshToken);
+
+          navigate('/'); 
         } else {
           toast.error(response.data.message || 'Invalid credentials');
         }
@@ -111,7 +117,7 @@ const Login = () => {
         >
           {/* Company Logo */}
           <img
-            src="https://chat.digimicra.com/assets/images/login.webp"
+            src={imgLogo}
             alt="Company Logo"
             style={{
               width: '100px',
@@ -168,22 +174,6 @@ const Login = () => {
                   '&.Mui-focused fieldset': { borderColor: '#1976D2' },
                 },
               }}
-            />
-
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="rememberMe"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                  sx={{
-                    color: '#1976D2',
-                    '&.Mui-checked': { color: '#1976D2' },
-                  }}
-                />
-              }
-              label="Remember Me"
-              sx={{ textAlign: 'left', width: '100%', color: '#555', mb: 1 }}
             />
 
             <Button
