@@ -4,6 +4,8 @@ import { Box, TextField, Button, CircularProgress, Paper, Grid } from '@mui/mate
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { apiPost } from '../../../utils/http';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const AddBlogAPI = 'apiAdmin/v1/blog/addBlog';
 
@@ -26,7 +28,7 @@ const AddBlog = () => {
       description,
       image,
       slug,
-      slugContent,
+      slugContent, // Now contains rich text content
       category,
     };
 
@@ -73,7 +75,8 @@ const AddBlog = () => {
               <TextField label="Slug" variant="outlined" fullWidth value={slug} onChange={(e) => setSlug(e.target.value)} />
             </Grid>
             <Grid item xs={12}>
-              <TextField label="Slug Content" variant="outlined" fullWidth multiline rows={3} value={slugContent} onChange={(e) => setSlugContent(e.target.value)} />
+              <label style={{ fontWeight: 'bold', fontSize: '1rem', color: '#333', marginBottom: '5px' }}>Slug Content</label>
+              <ReactQuill theme="snow" value={slugContent} onChange={setSlugContent} />
             </Grid>
             <Grid item xs={12}>
               <TextField label="Category" variant="outlined" fullWidth value={category} onChange={(e) => setCategory(e.target.value)} />

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, CircularProgress, Paper, Grid } from '@mui/material';
 import { toast } from 'react-toastify';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; 
 import 'react-toastify/dist/ReactToastify.css';
 import { apiPost } from '../../../utils/http';
 
@@ -18,7 +20,7 @@ const AddPackage = () => {
   const [image, setImage] = useState('');
   const [pdf, setPdf] = useState('');
   const [slug, setSlug] = useState('');
-  const [slugContent, setSlugContent] = useState('');
+  const [slugContent, setSlugContent] = useState(''); // Rich Content
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -40,13 +42,12 @@ const AddPackage = () => {
 
     try {
       const response = await apiPost(AddPackageAPI, packageData);
-
       console.log('API Response:', response.data);
       toast.success('Package created successfully!', { position: 'top-right', autoClose: 3000 });
 
       setTimeout(() => {
         navigate('/packages/view-all');
-      }, 3000); // Navigate after 3 seconds
+      }, 3000);
     } catch (err) {
       console.error('API Error:', err);
       toast.error('Failed to create package. Please try again.', { position: 'top-right', autoClose: 3000 });
@@ -175,16 +176,13 @@ const AddPackage = () => {
                 sx={{ marginBottom: '20px' }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Slug Content"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={3}
+            <Grid item xs={12}>
+              <label style={{ fontWeight: 'bold', marginBottom: '10px', display: 'block' }}>Slug Content</label>
+              <ReactQuill
+                theme="snow"
                 value={slugContent}
-                onChange={(e) => setSlugContent(e.target.value)}
-                sx={{ marginBottom: '20px' }}
+                onChange={setSlugContent}
+                style={{ height: '150px', marginBottom: '20px' }}
               />
             </Grid>
           </Grid>
@@ -192,7 +190,7 @@ const AddPackage = () => {
           {loading ? (
             <CircularProgress />
           ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
               <Button variant="contained" color="primary" type="submit">Submit</Button>
               <Button variant="outlined" color="secondary" onClick={handleCancel}>Cancel</Button>
             </Box>
