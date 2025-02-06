@@ -1,8 +1,7 @@
 import './App.css';
 import { SidebarProvider } from './context/SidebarContext';
 import AppRouter from './router';
-import { ToastContainer } from 'react-toastify'; // Import ToastContainer
-import 'react-toastify/dist/ReactToastify.css'; // Import the toast CSS
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
