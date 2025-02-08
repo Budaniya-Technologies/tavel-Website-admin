@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { IconButton, Avatar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
@@ -158,7 +158,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           {isOpen && <span>Settings</span>}
           {isOpen && (openSettings ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
         </div>
-        {openSettings && isOpen && (
+        {/* {openSettings && isOpen && (
           <ul style={nestedListStyle}>
             <li onClick={() => handleNavigation("/settings/theme")} style={nestedLinkStyle}>
               Theme
@@ -170,7 +170,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               Notifications
             </li>
           </ul>
-        )}
+        )} */}
       </div>
     </div>
   );
