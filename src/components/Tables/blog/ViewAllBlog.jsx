@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, IconButton, TablePagination } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import {
+  Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  CircularProgress, IconButton, TablePagination
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { apiGet } from '../../../utils/http';
@@ -11,6 +15,7 @@ const ViewAllBlog = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const navigate = useNavigate(); // ✅ Corrected navigation hook
 
   useEffect(() => {
     fetchBlogs();
@@ -31,7 +36,7 @@ const ViewAllBlog = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Editing blog with ID: ${id}`);
+    navigate(`/edit-blog/${id}`); // ✅ Corrected navigation
   };
 
   const handleDelete = (id) => {
@@ -49,13 +54,17 @@ const ViewAllBlog = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, margin: 'auto', padding: 3, boxShadow: 3, marginTop: '100px' }}>
-      <h2 style={{ textAlign: 'center', color: '#3f51b5', fontWeight: 'bold', margin: '30px', fontSize: '2rem' }}>View All Blogs</h2>
+      <h2 style={{ textAlign: 'center', color: '#3f51b5', fontWeight: 'bold', margin: '30px', fontSize: '2rem' }}>
+        View All Blogs
+      </h2>
       <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
         <Table sx={{ minWidth: 650, border: '1px solid #ddd' }}>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f4f4f4' }}>
               {['#', 'Title', 'Image', 'Category', 'Status', 'Created At', 'Actions'].map((head) => (
-                <TableCell key={head} sx={{ fontWeight: 'bold', border: '1px solid #ddd', textAlign: 'center' }}>{head}</TableCell>
+                <TableCell key={head} sx={{ fontWeight: 'bold', border: '1px solid #ddd', textAlign: 'center' }}>
+                  {head}
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -84,10 +93,16 @@ const ViewAllBlog = () => {
                   <TableCell sx={{ border: '1px solid #ddd', textAlign: 'center', color: blog.isStatus ? 'green' : 'red' }}>
                     {blog.isStatus ? 'Active' : 'Inactive'}
                   </TableCell>
-                  <TableCell sx={{ border: '1px solid #ddd', textAlign: 'center' }}>{new Date(blog.createdAt).toLocaleString()}</TableCell>
                   <TableCell sx={{ border: '1px solid #ddd', textAlign: 'center' }}>
-                    <IconButton color="primary" onClick={() => handleEdit(blog._id)}><EditIcon /></IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(blog._id)}><DeleteIcon /></IconButton>
+                    {new Date(blog.createdAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell sx={{ border: '1px solid #ddd', textAlign: 'center' }}>
+                    <IconButton color="primary" onClick={() => handleEdit(blog._id)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="error" onClick={() => handleDelete(blog._id)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))
