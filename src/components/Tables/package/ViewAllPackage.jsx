@@ -31,11 +31,11 @@ const ViewAllPackages = () => {
   };
 
   const handleEdit = (id) => {
-    navigate(`/edit-package/${id}`); // Correct navigation
+    navigate(`/edit-package/${id}`); 
   };
 
   const handleDelete = (id) => {
-    console.log(`Deleting package with ID: ${id}`);
+    navigate(`/edit-package/${id}`); 
   };
 
   const handleChangePage = (event, newPage) => {

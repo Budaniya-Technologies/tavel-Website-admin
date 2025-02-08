@@ -51,7 +51,7 @@ const Navbar = ({ toggleSidebar }) => {
         <div>
           {isAuthenticated ? (
             <>
-              <Button color="inherit" component={Link} to="/dashboard">
+              <Button color="inherit" component={Link} to="/">
                 Dashboard
               </Button>
               <IconButton
@@ -73,12 +73,6 @@ const Navbar = ({ toggleSidebar }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>
-                  <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>Profile</Link>
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <Link to="/settings" style={{ textDecoration: 'none', color: 'inherit' }}>Settings</Link>
-                </MenuItem>
                 <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
               </Menu>
             </>

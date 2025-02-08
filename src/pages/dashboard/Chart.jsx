@@ -16,7 +16,7 @@ const Chart = () => (
     <div className="w-full max-w-4xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg rounded-lg">
       
       <Paper elevation={6} className="p-6 rounded-lg shadow-md mt-10">
-        <h1 className="text-white text-4xl font-semibold mb-6 text-center p-10" style={{marginTop: '25px'}}>Monthly Statistics</h1>
+        <h1 className="text-white text-4xl font-semibold mb-6 text-center p-10" style={{marginTop: '25px', margin: '30px'}}>Monthly Statistics</h1>
         
         <ResponsiveContainer width="100%" height={550} style={{marginTop: '15px'}}>
           <LineChart data={data}>

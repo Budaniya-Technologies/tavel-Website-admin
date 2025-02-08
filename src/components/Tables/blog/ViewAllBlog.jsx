@@ -40,7 +40,7 @@ const ViewAllBlog = () => {
   };
 
   const handleDelete = (id) => {
-    console.log(`Deleting blog with ID: ${id}`);
+    navigate(`/edit-blog/${id}`);
   };
 
   const handleChangePage = (event, newPage) => {

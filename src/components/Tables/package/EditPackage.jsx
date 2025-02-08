@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, TextField, Button, Typography, FormControlLabel, Switch, Paper } from "@mui/material";
+import { Box, TextField, Button, Typography, FormControlLabel, Switch, Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { apiGet, apiPost } from "../../../utils/http"; 
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
@@ -8,6 +8,7 @@ import "react-quill/dist/quill.snow.css";
 
 const getSinglePackageAPI = "apiAdmin/v1/package/singlePackage";
 const updatePackageAPI = "apiAdmin/v1/package/updatePackage";
+const deletePackageAPI = "apiAdmin/v1/package/deletePackage";
 
 const EditPackage = () => {
   const { id } = useParams(); 
@@ -21,11 +22,12 @@ const EditPackage = () => {
     pickUpPoint: "",
     dropPoint: "",
     slug: "",
-    slugContent: "", // Added slugContent
+    slugContent: "",
     isStatus: false,
   });
 
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     fetchPackageDetails();
@@ -44,7 +46,7 @@ const EditPackage = () => {
         pickUpPoint: data.pickUpPoint || "",
         dropPoint: data.dropPoint || "",
         slug: data.slug || "",
-        slugContent: data.slugContent || "", // Fetching slugContent
+        slugContent: data.slugContent || "",
         isStatus: data.isStatus || false,
       });
     } catch (error) {
@@ -70,14 +72,26 @@ const EditPackage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      await apiPost(`${updatePackageAPI}/${id}`, packageData); 
+      await apiPost(`${updatePackageAPI}/${id}`, packageData);
       toast.success("Package updated successfully");
-      navigate("/packages/view-all"); 
+      navigate("/packages/view-all");
     } catch (error) {
       console.error("Error updating package:", error);
       toast.error("Failed to update package");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await apiGet(`${deletePackageAPI}/${id}`);
+      toast.success("Package deleted successfully");
+      navigate("/packages/view-all");
+    } catch (error) {
+      console.error("Error deleting package:", error);
+      toast.error("Failed to delete package");
+    } finally {
+      setOpenDialog(false);
     }
   };
 
@@ -99,8 +113,7 @@ const EditPackage = () => {
             <TextField fullWidth label="Pick-Up Point" name="pickUpPoint" value={packageData.pickUpPoint} onChange={handleChange} required sx={{ mb: 2 }} />
             <TextField fullWidth label="Drop Point" name="dropPoint" value={packageData.dropPoint} onChange={handleChange} required sx={{ mb: 2 }} />
             <TextField fullWidth label="Slug" name="slug" value={packageData.slug} onChange={handleChange} required sx={{ mb: 2 }} />
-
-            {/* Rich Text Editor for Slug Content */}
+            
             <Typography sx={{ mb: 1, fontWeight: "bold" }}>Slug Content</Typography>
             <ReactQuill theme="snow" value={packageData.slugContent} onChange={handleSlugContentChange} style={{ marginBottom: "20px" }} />
 
@@ -111,16 +124,24 @@ const EditPackage = () => {
             />
 
             <Box display="flex" justifyContent="space-between">
-              <Button variant="contained" color="primary" type="submit">
-                Update Package
-              </Button>
-              <Button variant="outlined" color="secondary" onClick={() => navigate("/view-all-packages")}>
-                Cancel
-              </Button>
+              <Button variant="contained" color="primary" type="submit">Update Package</Button>
+              <Button variant="outlined" color="secondary" onClick={() => navigate("/view-all-packages")}>Cancel</Button>
+              <Button variant="contained" color="error" onClick={() => setOpenDialog(true)}>Delete</Button>
             </Box>
           </form>
         )}
       </Paper>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Are you sure you want to delete this package? This action cannot be undone.</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">Cancel</Button>
+          <Button onClick={handleDelete} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

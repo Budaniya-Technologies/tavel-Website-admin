@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IconButton, Avatar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
@@ -13,10 +13,20 @@ import img from "../../assets/Images/thebagPacker-logo.png";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [openUsers, setOpenUsers] = useState(false);
   const [openPackages, setOpenPackages] = useState(false);
   const [openBlogs, setOpenBlogs] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
+
+  const handleNavigation = (path) => {
+    if (!isOpen) {
+      toggleSidebar(); // Open sidebar first
+      setTimeout(() => navigate(path), 300); // Delay navigation slightly for smooth transition
+    } else {
+      navigate(path);
+    }
+  };
 
   return (
     <div
@@ -62,35 +72,40 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       </div>
 
       <div style={menuContainerStyle}>
-        <Link to="/" style={linkStyle}>
+        <div onClick={() => handleNavigation("/")} style={linkStyle}>
           <HomeIcon style={iconStyle} />
           {isOpen && <span>Dashboard</span>}
-        </Link>
+        </div>
 
         {/* Users Dropdown */}
-        <div onClick={() => setOpenUsers(!openUsers)} style={dropdownStyle}>
+        <div
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenUsers(!openUsers);
+          }}
+          style={dropdownStyle}
+        >
           <GroupIcon style={iconStyle} />
           {isOpen && <span>Users</span>}
           {isOpen && (openUsers ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
         </div>
         {openUsers && isOpen && (
           <ul style={nestedListStyle}>
-            <li>
-              <Link to="/users/view-all" style={nestedLinkStyle}>
-                View All Users
-              </Link>
+            <li onClick={() => handleNavigation("/users/view-all")} style={nestedLinkStyle}>
+              View All Users
             </li>
-            <li>
-              <Link to="/users/add" style={nestedLinkStyle}>
-                Add New User
-              </Link>
+            <li onClick={() => handleNavigation("/users/add")} style={nestedLinkStyle}>
+              Add New User
             </li>
           </ul>
         )}
 
         {/* Packages Dropdown */}
         <div
-          onClick={() => setOpenPackages(!openPackages)}
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenPackages(!openPackages);
+          }}
           style={dropdownStyle}
         >
           <InventoryIcon style={iconStyle} />
@@ -99,43 +114,44 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
         {openPackages && isOpen && (
           <ul style={nestedListStyle}>
-            <li>
-              <Link to="/packages/view-all" style={nestedLinkStyle}>
-                View All Packages
-              </Link>
+            <li onClick={() => handleNavigation("/packages/view-all")} style={nestedLinkStyle}>
+              View All Packages
             </li>
-            <li>
-              <Link to="/packages/add" style={nestedLinkStyle}>
-                Add Package
-              </Link>
+            <li onClick={() => handleNavigation("/packages/add")} style={nestedLinkStyle}>
+              Add Package
             </li>
           </ul>
         )}
 
         {/* Blogs Dropdown */}
-        <div onClick={() => setOpenBlogs(!openBlogs)} style={dropdownStyle}>
+        <div
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenBlogs(!openBlogs);
+          }}
+          style={dropdownStyle}
+        >
           <ArticleIcon style={iconStyle} />
           {isOpen && <span>Blogs</span>}
           {isOpen && (openBlogs ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
         </div>
         {openBlogs && isOpen && (
           <ul style={nestedListStyle}>
-            <li>
-              <Link to="/blogs/view-all" style={nestedLinkStyle}>
-                View All Blogs
-              </Link>
+            <li onClick={() => handleNavigation("/blogs/view-all")} style={nestedLinkStyle}>
+              View All Blogs
             </li>
-            <li>
-              <Link to="/blogs/add" style={nestedLinkStyle}>
-                Add Blog
-              </Link>
+            <li onClick={() => handleNavigation("/blogs/add")} style={nestedLinkStyle}>
+              Add Blog
             </li>
           </ul>
         )}
 
         {/* Settings Dropdown */}
         <div
-          onClick={() => setOpenSettings(!openSettings)}
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenSettings(!openSettings);
+          }}
           style={dropdownStyle}
         >
           <SettingsIcon style={iconStyle} />
@@ -144,20 +160,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
         {openSettings && isOpen && (
           <ul style={nestedListStyle}>
-            <li>
-              <Link to="/settings/theme" style={nestedLinkStyle}>
-                Theme
-              </Link>
+            <li onClick={() => handleNavigation("/settings/theme")} style={nestedLinkStyle}>
+              Theme
             </li>
-            <li>
-              <Link to="/settings/account" style={nestedLinkStyle}>
-                Account Settings
-              </Link>
+            <li onClick={() => handleNavigation("/settings/account")} style={nestedLinkStyle}>
+              Account Settings
             </li>
-            <li>
-              <Link to="/settings/notifications" style={nestedLinkStyle}>
-                Notifications
-              </Link>
+            <li onClick={() => handleNavigation("/settings/notifications")} style={nestedLinkStyle}>
+              Notifications
             </li>
           </ul>
         )}

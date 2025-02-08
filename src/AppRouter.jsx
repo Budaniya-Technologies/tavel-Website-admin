@@ -10,6 +10,8 @@ import Register from "./pages/auth/Register";
 import ViewAllPackage from "./components/Tables/package/ViewAllPackage";
 import ViewAllBlog from "./components/Tables/blog/ViewAllBlog";
 import AddBlog from "./components/Tables/blog/AddBlog";
+import EditPackage from "./components/Tables/package/EditPackage";
+import EditBlog from "./components/Tables/blog/EditBlog";
 // import PrivateRoutes from "./utils/PrivateRoutes";
 
 function AppRouter() {
@@ -23,8 +25,10 @@ function AppRouter() {
             <Route path="/users/add" element={<AddUser />} />
             <Route path="/users/view-all" element={<ViewAllUsers />} />
             <Route path="/packages/view-all" element={<ViewAllPackage />} />
+            <Route path="/edit-package/:id" element={<EditPackage />} />
             <Route path="/packages/add" element={<AddPackage />} />
             <Route path="/blogs/view-all" element={<ViewAllBlog />} />
+            <Route path="/edit-blog/:id" element={<EditBlog />} />
             <Route path="/blogs/add" element={<AddBlog />} />
           </Route>
         {/* </Route> */}
