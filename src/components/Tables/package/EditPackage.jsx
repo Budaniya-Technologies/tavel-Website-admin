@@ -1,17 +1,29 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, TextField, Button, Typography, FormControlLabel, Switch, Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { apiGet, apiPost } from "../../../utils/http"; 
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  FormControlLabel,
+  Switch,
+  Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+import { apiGet, apiPost } from "../../../utils/http";
 import { toast } from "react-toastify";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { Editor } from "@tinymce/tinymce-react";
 
 const getSinglePackageAPI = "apiAdmin/v1/package/singlePackage";
 const updatePackageAPI = "apiAdmin/v1/package/updatePackage";
 const deletePackageAPI = "apiAdmin/v1/package/deletePackage";
 
 const EditPackage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [packageData, setPackageData] = useState({
@@ -84,7 +96,7 @@ const EditPackage = () => {
 
   const handleDelete = async () => {
     try {
-      await apiGet(`${deletePackageAPI}/${id}`);
+      await apiPost(`${deletePackageAPI}/${id}`);
       toast.success("Package deleted successfully");
       navigate("/packages/view-all");
     } catch (error) {
@@ -96,7 +108,7 @@ const EditPackage = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 900, margin: "auto", padding: 3, boxShadow: 3, marginTop: "50px" }}>
+    <Box sx={{ maxWidth: 1000, margin: "auto", padding: 3, boxShadow: 3, mt: 5 }}>
       <Paper sx={{ padding: 3, borderRadius: 2 }}>
         <Typography variant="h4" align="center" sx={{ color: "rgb(63, 81, 181)", fontWeight: "bold", mb: 3 }}>
           Edit Package
@@ -106,16 +118,92 @@ const EditPackage = () => {
           <Typography align="center">Loading...</Typography>
         ) : (
           <form onSubmit={handleSubmit}>
-            <TextField fullWidth label="Title" name="title" value={packageData.title} onChange={handleChange} required sx={{ mb: 2 }} />
-            <TextField fullWidth label="Image URL" name="image" value={packageData.image} onChange={handleChange} required sx={{ mb: 2 }} />
-            <TextField fullWidth label="Price" name="price" type="number" value={packageData.price} onChange={handleChange} required sx={{ mb: 2 }} />
-            <TextField fullWidth label="Duration" name="duration" value={packageData.duration} onChange={handleChange} required sx={{ mb: 2 }} />
-            <TextField fullWidth label="Pick-Up Point" name="pickUpPoint" value={packageData.pickUpPoint} onChange={handleChange} required sx={{ mb: 2 }} />
-            <TextField fullWidth label="Drop Point" name="dropPoint" value={packageData.dropPoint} onChange={handleChange} required sx={{ mb: 2 }} />
-            <TextField fullWidth label="Slug" name="slug" value={packageData.slug} onChange={handleChange} required sx={{ mb: 2 }} />
-            
+            <TextField
+              fullWidth
+              label="Title"
+              name="title"
+              value={packageData.title}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Image URL"
+              name="image"
+              value={packageData.image}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Price"
+              name="price"
+              type="number"
+              value={packageData.price}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Duration"
+              name="duration"
+              value={packageData.duration}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Pick-Up Point"
+              name="pickUpPoint"
+              value={packageData.pickUpPoint}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Drop Point"
+              name="dropPoint"
+              value={packageData.dropPoint}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Slug"
+              name="slug"
+              value={packageData.slug}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+
             <Typography sx={{ mb: 1, fontWeight: "bold" }}>Slug Content</Typography>
-            <ReactQuill theme="snow" value={packageData.slugContent} onChange={handleSlugContentChange} style={{ marginBottom: "20px" }} />
+            <Editor
+              apiKey="miflkqi97aug225uq3gzzof6x2wm6qnw9so0csr8o98k6vye"
+              value={packageData.slugContent}
+              init={{
+                plugins: [
+                  "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount",
+                  "checklist mediaembed casechange export formatpainter pageembed a11ychecker tinymcespellchecker permanentpen powerpaste",
+                  "advtable advcode editimage advtemplate mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss",
+                ],
+                toolbar:
+                  "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+                tinycomments_mode: "embedded",
+                tinycomments_author: "Author name",
+                mergetags_list: [
+                  { value: "First.Name", title: "First Name" },
+                  { value: "Email", title: "Email" },
+                ],
+              }}
+              onEditorChange={handleSlugContentChange}
+            />
 
             <FormControlLabel
               control={<Switch checked={packageData.isStatus} onChange={handleToggleStatus} />}
@@ -124,9 +212,15 @@ const EditPackage = () => {
             />
 
             <Box display="flex" justifyContent="space-between">
-              <Button variant="contained" color="primary" type="submit">Update Package</Button>
-              <Button variant="outlined" color="secondary" onClick={() => navigate("/view-all-packages")}>Cancel</Button>
-              <Button variant="contained" color="error" onClick={() => setOpenDialog(true)}>Delete</Button>
+              <Button variant="contained" color="primary" type="submit">
+                Update Package
+              </Button>
+              <Button variant="outlined" color="secondary" onClick={() => navigate("/packages/view-all")}>
+                Cancel
+              </Button>
+              <Button variant="contained" color="error" onClick={() => setOpenDialog(true)}>
+                Delete
+              </Button>
             </Box>
           </form>
         )}
@@ -138,8 +232,12 @@ const EditPackage = () => {
           <DialogContentText>Are you sure you want to delete this package? This action cannot be undone.</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">Cancel</Button>
-          <Button onClick={handleDelete} color="error">Delete</Button>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="error">
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Box, TextField, Button, Typography, FormControlLabel, Switch, Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { Editor } from "@tinymce/tinymce-react";
 import { apiGet, apiPost } from "../../../utils/http"; 
 import { toast } from "react-toastify";
 
@@ -92,7 +91,7 @@ const EditBlog = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 900, margin: "auto", padding: 3, boxShadow: 3, marginTop: "50px" }}>
+    <Box sx={{ maxWidth: 1000, margin: "auto", padding: 3, boxShadow: 3, marginTop: "50px" }}>
       <Paper sx={{ padding: 3, borderRadius: 2 }}>
         <Typography variant="h4" align="center" sx={{ color: "rgb(63, 81, 181)", fontWeight: "bold", mb: 3 }}>
           Edit Blog
@@ -109,8 +108,26 @@ const EditBlog = () => {
             <TextField fullWidth label="Category" name="category" value={blogData.category} onChange={handleChange} required sx={{ mb: 2 }} />
 
             <Typography variant="h6" sx={{ mb: 1 }}>Slug Content</Typography>
-            <ReactQuill value={blogData.slugContent} onChange={handleSlugContentChange} style={{ height: "200px", marginBottom: "20px" }} />
-
+            <Editor
+              apiKey="miflkqi97aug225uq3gzzof6x2wm6qnw9so0csr8o98k6vye"
+              value={blogData.slugContent}
+              init={{
+                plugins: [
+                  "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount",
+                  "checklist mediaembed casechange export formatpainter pageembed a11ychecker tinymcespellchecker permanentpen powerpaste",
+                  "advtable advcode editimage advtemplate mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss",
+                ],
+                toolbar:
+                  "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+                tinycomments_mode: "embedded",
+                tinycomments_author: "Author name",
+                mergetags_list: [
+                  { value: "First.Name", title: "First Name" },
+                  { value: "Email", title: "Email" },
+                ],
+              }}
+              onEditorChange={handleSlugContentChange}
+            />
             <FormControlLabel
               control={<Switch checked={blogData.isStatus} onChange={handleToggleStatus} />}
               label={blogData.isStatus ? "Active" : "Inactive"}
