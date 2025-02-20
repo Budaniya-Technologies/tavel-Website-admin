@@ -33,6 +33,7 @@ const EditPackage = () => {
     duration: "",
     pickUpPoint: "",
     dropPoint: "",
+    pdf: "",
     slug: "",
     slugContent: "",
     isStatus: false,
@@ -58,6 +59,7 @@ const EditPackage = () => {
         pickUpPoint: data.pickUpPoint || "",
         dropPoint: data.dropPoint || "",
         slug: data.slug || "",
+        pdf: data.pdf || "",
         slugContent: data.slugContent || "",
         isStatus: data.isStatus || false,
       });
@@ -132,6 +134,15 @@ const EditPackage = () => {
               label="Image URL"
               name="image"
               value={packageData.image}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Pdf"
+              name="pdf"
+              value={packageData.pdf}
               onChange={handleChange}
               required
               sx={{ mb: 2 }}
