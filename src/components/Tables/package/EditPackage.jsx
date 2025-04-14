@@ -28,6 +28,7 @@ const EditPackage = () => {
 
   const [packageData, setPackageData] = useState({
     title: "",
+    description: "",
     image: "",
     price: "",
     duration: "",
@@ -53,6 +54,7 @@ const EditPackage = () => {
       const data = response.data.data;
       setPackageData({
         title: data.title || "",
+        description: data.description || "",
         image: data.image || "",
         price: data.price || "",
         duration: data.duration || "",
@@ -125,6 +127,15 @@ const EditPackage = () => {
               label="Title"
               name="title"
               value={packageData.title}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+             <TextField
+              fullWidth
+              label="Description"
+              name="description"
+              value={packageData.description}
               onChange={handleChange}
               required
               sx={{ mb: 2 }}
