@@ -1,7 +1,6 @@
 import { axiosInstance } from "./axiosInstance";
 
 const GetAPI = async (url) => {
-  
   const headers = {
     "Content-Type": "application/json",
   };
@@ -37,8 +36,11 @@ function apiPut(url, body, contentType = "application/json") {
   });
 }
 
-function apiPatch(url, body) {
-  return axiosInstance.patch(url, body);
+function apiPatch(url, body, contentType = "application/json") {
+  const headers = {
+    "Content-Type": contentType,
+  };
+  return axiosInstance.patch(url, body, { headers });
 }
 
 function apiDelete(url) {

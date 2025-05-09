@@ -12,6 +12,15 @@ import ViewAllBlog from "./components/Tables/blog/ViewAllBlog";
 import AddBlog from "./components/Tables/blog/AddBlog";
 import EditPackage from "./components/Tables/package/EditPackage";
 import EditBlog from "./components/Tables/blog/EditBlog";
+// import AddHome from "./components/Tables/HomeMain/AddHome";
+import ViewHome from "./components/Tables/HomeMain/ViewHome";
+import ViewAllCategory from "./components/Tables/category/ViewAllCategory";
+import AddCategory from "./components/Tables/category/AddCategory";
+import EditCategory from "./components/Tables/category/EditCategory";
+import ViewAllhiking from "./components/Tables/hiking/ViewAllhiking";
+import AddHiking from "./components/Tables/hiking/AddHiking";
+import EditHiking from "./components/Tables/hiking/EditHiking";
+// import EditHome from "./components/Tables/HomeMain/EditHome";
 // import PrivateRoutes from "./utils/PrivateRoutes";
 
 function AppRouter() {
@@ -24,12 +33,21 @@ function AppRouter() {
             <Route path="users" element={<User />} />
             <Route path="/users/add" element={<AddUser />} />
             <Route path="/users/view-all" element={<ViewAllUsers />} />
+            {/* <Route path="/homemain/add" element={<AddHome />} /> */}
+            {/* <Route path="/edit-home/:id" element={<EditHome />} /> */}
+            <Route path="/homemain/view-all" element={<ViewHome />} />
             <Route path="/packages/view-all" element={<ViewAllPackage />} />
             <Route path="/edit-package/:id" element={<EditPackage />} />
             <Route path="/packages/add" element={<AddPackage />} />
             <Route path="/blogs/view-all" element={<ViewAllBlog />} />
             <Route path="/edit-blog/:id" element={<EditBlog />} />
             <Route path="/blogs/add" element={<AddBlog />} />
+            <Route path="/category/view-all" element={<ViewAllCategory />} />
+            <Route path="/category/add" element={<AddCategory />} />
+            <Route path="category/edit/:id" element={<EditCategory />} />
+            <Route path="/hiking/view-all" element={<ViewAllhiking />} />
+            <Route path="/hiking/add" element={<AddHiking />} />
+            <Route path="/hiking/edit/:id" element={<EditHiking />} />
           </Route>
         {/* </Route> */}
         <Route path="/register" element={<Register />} />

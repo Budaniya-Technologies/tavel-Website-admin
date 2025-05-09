@@ -6,6 +6,8 @@ import GroupIcon from "@mui/icons-material/Group";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import HikingIcon from '@mui/icons-material/Hiking';
+import CategoryIcon from "@mui/icons-material/Category";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ArticleIcon from "@mui/icons-material/Article";
 import { useTheme } from "@mui/material/styles";
@@ -18,6 +20,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [openPackages, setOpenPackages] = useState(false);
   const [openBlogs, setOpenBlogs] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
+  const [openHomeMain, setOpenHomeMain] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
+  const [openHiking, setOpenHiking] = useState(false);
 
   const handleNavigation = (path) => {
     if (!isOpen) {
@@ -77,6 +82,34 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           {isOpen && <span>Dashboard</span>}
         </div>
 
+        <div
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenHomeMain(!openHomeMain);
+          }}
+          style={dropdownStyle}
+        >
+          <HomeIcon style={iconStyle} />
+          {isOpen && <span>HomeMain</span>}
+          {isOpen && (openHomeMain ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+        </div>
+        {openHomeMain && isOpen && (
+          <ul style={nestedListStyle}>
+            <li
+              onClick={() => handleNavigation("/homemain/view-all")}
+              style={nestedLinkStyle}
+            >
+              View All HomeMain
+            </li>
+            {/* <li
+              onClick={() => handleNavigation("/homemain/add")}
+              style={nestedLinkStyle}
+            >
+              Add HomeMain
+            </li> */}
+          </ul>
+        )}
+
         {/* Users Dropdown */}
         <div
           onClick={() => {
@@ -91,10 +124,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
         {openUsers && isOpen && (
           <ul style={nestedListStyle}>
-            <li onClick={() => handleNavigation("/users/view-all")} style={nestedLinkStyle}>
+            <li
+              onClick={() => handleNavigation("/users/view-all")}
+              style={nestedLinkStyle}
+            >
               View All Users
             </li>
-            <li onClick={() => handleNavigation("/users/add")} style={nestedLinkStyle}>
+            <li
+              onClick={() => handleNavigation("/users/add")}
+              style={nestedLinkStyle}
+            >
               Add New User
             </li>
           </ul>
@@ -114,10 +153,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
         {openPackages && isOpen && (
           <ul style={nestedListStyle}>
-            <li onClick={() => handleNavigation("/packages/view-all")} style={nestedLinkStyle}>
+            <li
+              onClick={() => handleNavigation("/packages/view-all")}
+              style={nestedLinkStyle}
+            >
               View All Packages
             </li>
-            <li onClick={() => handleNavigation("/packages/add")} style={nestedLinkStyle}>
+            <li
+              onClick={() => handleNavigation("/packages/add")}
+              style={nestedLinkStyle}
+            >
               Add Package
             </li>
           </ul>
@@ -137,14 +182,77 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
         {openBlogs && isOpen && (
           <ul style={nestedListStyle}>
-            <li onClick={() => handleNavigation("/blogs/view-all")} style={nestedLinkStyle}>
+            <li
+              onClick={() => handleNavigation("/blogs/view-all")}
+              style={nestedLinkStyle}
+            >
               View All Blogs
             </li>
-            <li onClick={() => handleNavigation("/blogs/add")} style={nestedLinkStyle}>
+            <li
+              onClick={() => handleNavigation("/blogs/add")}
+              style={nestedLinkStyle}
+            >
               Add Blog
             </li>
           </ul>
         )}
+
+        <div
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenCategory(!openCategory);
+          }}
+          style={dropdownStyle}
+        >
+          <CategoryIcon style={iconStyle} />{" "}
+          {/* Replace with your preferred icon */}
+          {isOpen && <span>Category</span>}
+          {isOpen && (openCategory ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+        </div>
+        {openCategory && isOpen && (
+          <ul style={nestedListStyle}>
+            <li
+              onClick={() => handleNavigation("/category/view-all")}
+              style={nestedLinkStyle}
+            >
+              View All Category
+            </li>
+            <li
+              onClick={() => handleNavigation("/category/add")}
+              style={nestedLinkStyle}
+            >
+              Add Category
+            </li>
+          </ul>
+        )}
+
+<div
+  onClick={() => {
+    if (!isOpen) toggleSidebar();
+    else setOpenHiking(!openHiking);
+  }}
+  style={dropdownStyle}
+>
+  <HikingIcon style={iconStyle} /> {/* Replace with your hiking icon */}
+  {isOpen && <span>Hiking</span>}
+  {isOpen && (openHiking ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+</div>
+{openHiking && isOpen && (
+  <ul style={nestedListStyle}>
+    <li
+      onClick={() => handleNavigation("/hiking/view-all")}
+      style={nestedLinkStyle}
+    >
+      View All Hiking
+    </li>
+    <li
+      onClick={() => handleNavigation("/hiking/add")}
+      style={nestedLinkStyle}
+    >
+      Add New Hiking
+    </li>
+  </ul>
+)}
 
         {/* Settings Dropdown */}
         <div
@@ -189,7 +297,7 @@ const profileContainer = {
 const linkStyle = {
   display: "flex",
   alignItems: "center",
-  padding: "14px 20px",
+  // padding: "14px 20px",
   color: "white",
   textDecoration: "none",
   fontSize: "16px",
@@ -208,7 +316,7 @@ const iconStyle = {
 const dropdownStyle = {
   display: "flex",
   alignItems: "center",
-  padding: "14px 20px",
+  // padding: "14px 20px",
   color: "white",
   fontSize: "16px",
   fontWeight: "500",
@@ -228,7 +336,7 @@ const nestedListStyle = {
 const nestedLinkStyle = {
   color: "#d1d1d1",
   textDecoration: "none",
-  padding: "10px 0",
+  padding: "5px 0",
   display: "block",
   fontSize: "14px",
   fontWeight: "400",
