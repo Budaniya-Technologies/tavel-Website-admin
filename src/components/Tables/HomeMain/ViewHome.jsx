@@ -13,6 +13,11 @@ import {
   TextField,
   Button,
   Input,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -29,14 +34,14 @@ const ViewHome = () => {
     bannerImg: "",
     headingText: "",
     logoUrl: "",
-    bannerFile: null, // File input for the banner image
-    logoFile: null, // File input for the logo
-    useBannerUrl: true, // Flag to check whether to use the URL or file
-    useLogoUrl: true, // Flag to check whether to use the URL or file
+    bannerFile: null,
+    logoFile: null,
+    useBannerUrl: true,
+    useLogoUrl: true,
   });
   
-  const ipURL = import.meta.env.VITE_API_URL
-  const bannerImg = `${ipURL.slice(0, ipURL.length - 1)}`
+  const ipURL = import.meta.env.VITE_API_URL;
+  const baseURL = ipURL.endsWith('/') ? ipURL.slice(0, -1) : ipURL;
 
   useEffect(() => {
     fetchHomeItem();
@@ -53,8 +58,8 @@ const ViewHome = () => {
           headingText: response.data.headingText,
           logoUrl: response.data.logoUrl,
           bannerFile: null,
-          logoFile: null, 
-          useBannerUrl: true, 
+          logoFile: null,
+          useBannerUrl: true,
           useLogoUrl: true,
         });
       }
@@ -66,7 +71,8 @@ const ViewHome = () => {
   };
 
   const handleInputChange = (e) => {
-    setUpdatedData({ ...updatedData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUpdatedData({ ...updatedData, [name]: value });
   };
 
   const handleFileChange = (e) => {
@@ -78,20 +84,41 @@ const ViewHome = () => {
     setEditing(true);
   };
 
+  const validateUrl = (url) => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleSaveClick = async () => {
+    // Validate URL if using URL option
+    if (updatedData.useBannerUrl && updatedData.bannerImg) {
+      if (!validateUrl(updatedData.bannerImg)) {
+        alert("Please enter a valid URL starting with http:// or https://");
+        return;
+      }
+    }
+
     setLoading(true);
 
     const formData = new FormData();
+    
+    // Handle banner image
     if (updatedData.useBannerUrl) {
-      formData.append("bannerImg", updatedData.banerImg); // URL if selected
+      formData.append("bannerImg", updatedData.bannerImg);
     } else if (updatedData.bannerFile) {
-      formData.append("bannerImg", updatedData.bannerFile); // File if selected
+      formData.append("bannerImg", updatedData.bannerFile);
     }
 
+    // Handle logo
     if (updatedData.useLogoUrl) {
-      formData.append("logoUrl", updatedData.logoUrl); // URL if selected
+      formData.append("logoUrl", updatedData.logoUrl);
     } else if (updatedData.logoFile) {
-      formData.append("logoUrl", updatedData.logoFile); // File if selected
+      formData.append("logoUrl", updatedData.logoFile);
     }
 
     formData.append("headingText", updatedData.headingText);
@@ -105,12 +132,26 @@ const ViewHome = () => {
       if (response?.data) {
         setHomeItem(response.data);
         setEditing(false);
+        fetchHomeItem(); // Refresh data after update
       }
     } catch (error) {
       console.error("Error updating item:", error);
+      alert("Error updating content. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const getImageSrc = (imagePath) => {
+    if (!imagePath) return "";
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    
+    // Otherwise, prepend the base URL
+    return `${baseURL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
   };
 
   return (
@@ -141,32 +182,30 @@ const ViewHome = () => {
         <Table sx={{ minWidth: 650, border: "1px solid #ddd" }}>
           <TableHead>
             <TableRow sx={{ backgroundColor: "#f4f4f4" }}>
-              {["#", "Title", "Banner Image",  "Actions"].map(
-                (head) => (
-                  <TableCell
-                    key={head}
-                    sx={{
-                      fontWeight: "bold",
-                      border: "1px solid #ddd",
-                      textAlign: "center",
-                    }}
-                  >
-                    {head}
-                  </TableCell>
-                )
-              )}
+              {["#", "Title", "Banner Image", "Actions"].map((head) => (
+                <TableCell
+                  key={head}
+                  sx={{
+                    fontWeight: "bold",
+                    border: "1px solid #ddd",
+                    textAlign: "center",
+                  }}
+                >
+                  {head}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading ? (
+            {loading && !editing ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={4} align="center">
                   <CircularProgress />
                 </TableCell>
               </TableRow>
             ) : !homeItem ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={4} align="center">
                   No content found.
                 </TableCell>
               </TableRow>
@@ -194,6 +233,7 @@ const ViewHome = () => {
                       value={updatedData.headingText}
                       onChange={handleInputChange}
                       size="small"
+                      fullWidth
                     />
                   ) : (
                     homeItem.headingText
@@ -204,103 +244,107 @@ const ViewHome = () => {
                   sx={{ border: "1px solid #ddd", textAlign: "center" }}
                 >
                   {editing ? (
-                    <>
-                      <TextField
-                        name="bannerImg"
-                        value={updatedData.bannerImg}
-                        onChange={handleInputChange}
-                        size="small"
-                        disabled={!updatedData.useBannerUrl}
-                      />
-                      <br />
-                      <label>
-                        <input
-                          type="radio"
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      <FormControl component="fieldset">
+                        <RadioGroup
+                          row
                           name="useBannerUrl"
-                          value="false"
-                          checked={!updatedData.useBannerUrl}
-                          onChange={() =>
+                          value={updatedData.useBannerUrl.toString()}
+                          onChange={(e) =>
                             setUpdatedData({
                               ...updatedData,
-                              useBannerUrl: false,
+                              useBannerUrl: e.target.value === "true",
                             })
                           }
-                        />
-                        Upload File
-                      </label>
-                      {!updatedData.useBannerUrl && (
-                        <Input
-                          type="file"
-                          name="bannerFile"
-                          onChange={handleFileChange}
-                          inputProps={{ accept: "image/*" }}
-                        />
+                        >
+                          <FormControlLabel
+                            value="true"
+                            control={<Radio size="small" />}
+                            label="Use URL"
+                          />
+                          <FormControlLabel
+                            value="false"
+                            control={<Radio size="small" />}
+                            label="Upload File"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                      
+                      {updatedData.useBannerUrl ? (
+                        <>
+                          <TextField
+                            name="bannerImg"
+                            value={updatedData.bannerImg}
+                            onChange={handleInputChange}
+                            size="small"
+                            fullWidth
+                            placeholder="Enter image URL (http:// or https://)"
+                            error={updatedData.bannerImg && !validateUrl(updatedData.bannerImg)}
+                            helperText={updatedData.bannerImg && !validateUrl(updatedData.bannerImg) ? "Please enter a valid URL" : ""}
+                          />
+                          {updatedData.bannerImg && validateUrl(updatedData.bannerImg) && (
+                            <Box mt={1}>
+                              <img
+                                src={updatedData.bannerImg}
+                                alt="URL Preview"
+                                width={100}
+                                height={60}
+                                style={{ borderRadius: "5px" }}
+                                onError={(e) => {
+                                  e.target.onerror = null; 
+                                  e.target.src = "https://via.placeholder.com/100x60?text=Invalid+URL";
+                                }}
+                              />
+                            </Box>
+                          )}
+                        </>
+                      ) : (
+                        <Box>
+                          <Input
+                            type="file"
+                            name="bannerFile"
+                            onChange={handleFileChange}
+                            inputProps={{ accept: "image/*" }}
+                            fullWidth
+                          />
+                          {updatedData.bannerFile && (
+                            <Box mt={1}>
+                              <img
+                                src={URL.createObjectURL(updatedData.bannerFile)}
+                                alt="Preview"
+                                width={100}
+                                height={60}
+                                style={{ borderRadius: "5px" }}
+                              />
+                              <Typography variant="caption" display="block">
+                                {updatedData.bannerFile.name}
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
                       )}
-                    </>
+                    </Box>
                   ) : (
-                    <img
-                      src={`${bannerImg}${updatedData.bannerImg}`}
-                      alt="Banner"
-                      width={50}
-                      height={50}
-                      style={{ borderRadius: "5px" }}
-                    />
+                    <Box>
+                      <img
+                        src={getImageSrc(homeItem.bannerImg)}
+                        alt="Banner"
+                        width={100}
+                        height={60}
+                        style={{ borderRadius: "5px" }}
+                        onError={(e) => {
+                          e.target.onerror = null; 
+                          e.target.src = "https://via.placeholder.com/100x60?text=Image+Not+Found";
+                        }}
+                      />
+                      {homeItem.bannerImg && (
+                        <Typography variant="caption" display="block">
+                          {homeItem.bannerImg.startsWith('http')}
+                        </Typography>
+                      )}
+                    </Box>
                   )}
                 </TableCell>
-
-                {/* <TableCell
-                  sx={{ border: "1px solid #ddd", textAlign: "center" }}
-                >
-                  {editing ? (
-                    <>
-                      <TextField
-                        name="logoUrl"
-                        value={updatedData.logoUrl}
-                        onChange={handleInputChange}
-                        size="small"
-                        disabled={!updatedData.useLogoUrl}
-                      />
-                      <br />
-                      <label>
-                        <input
-                          type="radio"
-                          name="useLogoUrl"
-                          value="true"
-                          checked={updatedData.useLogoUrl}
-                          onChange={() =>
-                            setUpdatedData({ ...updatedData, useLogoUrl: true })
-                          }
-                        />
-                        Use URL
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name="useLogoUrl"
-                          value="false"
-                          checked={!updatedData.useLogoUrl}
-                          onChange={() =>
-                            setUpdatedData({
-                              ...updatedData,
-                              useLogoUrl: false,
-                            })
-                          }
-                        />
-                        Upload File
-                      </label>
-                      {!updatedData.useLogoUrl && (
-                        <Input
-                          type="file"
-                          name="logoFile"
-                          onChange={handleFileChange}
-                          inputProps={{ accept: "image/*" }}
-                        />
-                      )}
-                    </>
-                  ) : (
-                    homeItem.logoUrl
-                  )}
-                </TableCell> */}
 
                 <TableCell
                   sx={{ border: "1px solid #ddd", textAlign: "center" }}
@@ -312,8 +356,9 @@ const ViewHome = () => {
                       color="success"
                       size="small"
                       startIcon={<SaveIcon />}
+                      disabled={loading}
                     >
-                      Save
+                      {loading ? <CircularProgress size={24} /> : "Save"}
                     </Button>
                   ) : (
                     <IconButton color="primary" onClick={handleEditClick}>

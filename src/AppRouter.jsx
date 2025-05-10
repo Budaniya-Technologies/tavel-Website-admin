@@ -12,16 +12,14 @@ import ViewAllBlog from "./components/Tables/blog/ViewAllBlog";
 import AddBlog from "./components/Tables/blog/AddBlog";
 import EditPackage from "./components/Tables/package/EditPackage";
 import EditBlog from "./components/Tables/blog/EditBlog";
-// import AddHome from "./components/Tables/HomeMain/AddHome";
 import ViewHome from "./components/Tables/HomeMain/ViewHome";
 import ViewAllCategory from "./components/Tables/category/ViewAllCategory";
 import AddCategory from "./components/Tables/category/AddCategory";
 import EditCategory from "./components/Tables/category/EditCategory";
 import ViewAllhiking from "./components/Tables/hiking/ViewAllhiking";
 import AddHiking from "./components/Tables/hiking/AddHiking";
-import EditHiking from "./components/Tables/hiking/EditHiking";
-// import EditHome from "./components/Tables/HomeMain/EditHome";
-// import PrivateRoutes from "./utils/PrivateRoutes";
+import ViewAllPicture from "./components/Tables/picture/ViewAllPicture";
+import AddPicture from "./components/Tables/picture/AddPicture";
 
 function AppRouter() {
   return (
@@ -47,7 +45,8 @@ function AppRouter() {
             <Route path="category/edit/:id" element={<EditCategory />} />
             <Route path="/hiking/view-all" element={<ViewAllhiking />} />
             <Route path="/hiking/add" element={<AddHiking />} />
-            <Route path="/hiking/edit/:id" element={<EditHiking />} />
+            <Route path="/pictures/view-all" element={<ViewAllPicture />} />
+            <Route path="/pictures/add" element={<AddPicture />} />
           </Route>
         {/* </Route> */}
         <Route path="/register" element={<Register />} />

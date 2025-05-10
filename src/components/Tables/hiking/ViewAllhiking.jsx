@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   Table,
@@ -12,6 +12,10 @@ import {
   IconButton,
   TextField,
   Button,
+  Typography,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -30,7 +34,13 @@ const ViewAllHiking = () => {
     title: "",
     description: "",
     image: "",
+    imageFile: null,
+    useImageUrl: true,
   });
+  const fileInputRef = useRef(null);
+
+  const ipURL = import.meta.env.VITE_API_URL;
+  const baseImageUrl = ipURL.endsWith("/") ? ipURL.slice(0, -1) : ipURL;
 
   useEffect(() => {
     fetchHikingStyles();
@@ -54,12 +64,39 @@ const ViewAllHiking = () => {
     setUpdatedData({ ...updatedData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUpdatedData({
+          ...updatedData,
+          imageFile: file,
+          useImageUrl: false,
+          image: event.target.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRadioChange = (e) => {
+    const useUrl = e.target.value === "true";
+    setUpdatedData({
+      ...updatedData,
+      useImageUrl: useUrl,
+      imageFile: useUrl ? null : updatedData.imageFile,
+    });
+  };
+
   const handleEditClick = (hikingStyle) => {
     setEditingId(hikingStyle._id);
     setUpdatedData({
       title: hikingStyle.title,
       description: hikingStyle.description,
       image: hikingStyle.image,
+      imageFile: null,
+      useImageUrl: true,
     });
   };
 
@@ -73,23 +110,28 @@ const ViewAllHiking = () => {
     setLoading(true);
 
     try {
-      const payload = {
-        title: updatedData.title,
-        description: updatedData.description,
-        image: updatedData.image,
-      };
+      const formData = new FormData();
+      formData.append("title", updatedData.title);
+      formData.append("description", updatedData.description);
 
-      console.log("Sending update:", payload);
+      if (updatedData.useImageUrl) {
+        formData.append("image", updatedData.image);
+      } else if (updatedData.imageFile) {
+        formData.append("image", updatedData.imageFile);
+      }
 
       const response = await apiPut(
         `${updateHikingStyleAPI}/${editingId}`,
-        payload
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
-      console.log("API Response:", response.data);
-
       if (response?.data) {
-        setHikingStyles(hikingStyles.map(item => 
+        setHikingStyles(hikingStyles.map(item =>
           item._id === editingId ? response.data : item
         ));
         setEditingId(null);
@@ -117,6 +159,13 @@ const ViewAllHiking = () => {
     }
   };
 
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "";
+    if (imagePath.startsWith("http")) return imagePath;
+    return `${baseImageUrl}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+  };
+
   return (
     <Box
       sx={{
@@ -127,22 +176,19 @@ const ViewAllHiking = () => {
         marginTop: "100px",
       }}
     >
-      <h2
-        style={{
+      <Typography
+        variant="h4"
+        sx={{
           textAlign: "center",
           color: "#3f51b5",
           fontWeight: "bold",
           margin: "30px",
-          fontSize: "2rem",
         }}
       >
         View Hiking Styles
-      </h2>
-      <TableContainer
-        component={Paper}
-        sx={{ borderRadius: 2, overflow: "hidden", boxShadow: 3 }}
-      >
-        <Table sx={{ minWidth: 650, border: "1px solid #ddd" }}>
+      </Typography>
+      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 3 }}>
+        <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow sx={{ backgroundColor: "#f4f4f4" }}>
               {["#", "Title", "Description", "Image", "Actions"].map((head) => (
@@ -178,19 +224,9 @@ const ViewAllHiking = () => {
                   key={hikingStyle._id}
                   sx={{ "&:hover": { backgroundColor: "#f9f9f9" } }}
                 >
-                  <TableCell
-                    sx={{
-                      fontWeight: "bold",
-                      border: "1px solid #ddd",
-                      textAlign: "center",
-                    }}
-                  >
-                    {index + 1}
-                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>{index + 1}</TableCell>
 
-                  <TableCell
-                    sx={{ border: "1px solid #ddd", textAlign: "center" }}
-                  >
+                  <TableCell sx={{ textAlign: "center" }}>
                     {editingId === hikingStyle._id ? (
                       <TextField
                         name="title"
@@ -204,9 +240,7 @@ const ViewAllHiking = () => {
                     )}
                   </TableCell>
 
-                  <TableCell
-                    sx={{ border: "1px solid #ddd", textAlign: "center" }}
-                  >
+                  <TableCell sx={{ textAlign: "center" }}>
                     {editingId === hikingStyle._id ? (
                       <TextField
                         name="description"
@@ -221,20 +255,63 @@ const ViewAllHiking = () => {
                     )}
                   </TableCell>
 
-                  <TableCell
-                    sx={{ border: "1px solid #ddd", textAlign: "center" }}
-                  >
+                  <TableCell sx={{ textAlign: "center" }}>
                     {editingId === hikingStyle._id ? (
-                      <TextField
-                        name="image"
-                        value={updatedData.image}
-                        onChange={handleInputChange}
-                        size="small"
-                        fullWidth
-                      />
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        <RadioGroup
+                          row
+                          name="useImageUrl"
+                          value={updatedData.useImageUrl.toString()}
+                          onChange={handleRadioChange}
+                        >
+                          <FormControlLabel
+                            value="true"
+                            control={<Radio />}
+                            label="Use URL"
+                          />
+                          <FormControlLabel
+                            value="false"
+                            control={<Radio />}
+                            label="Upload File"
+                          />
+                        </RadioGroup>
+
+                        {updatedData.useImageUrl ? (
+                          <TextField
+                            name="image"
+                            value={updatedData.image}
+                            onChange={handleInputChange}
+                            size="small"
+                            fullWidth
+                            placeholder="Enter image URL"
+                          />
+                        ) : (
+                          <Box>
+                            <Button
+                              variant="contained"
+                              component="label"
+                              size="small"
+                            >
+                              Upload Image
+                              <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept="image/*"
+                                hidden
+                              />
+                            </Button>
+                            {updatedData.imageFile && (
+                              <Typography variant="caption" display="block">
+                                {updatedData.imageFile.name}
+                              </Typography>
+                            )}
+                          </Box>
+                        )}
+                      </Box>
                     ) : (
                       <img
-                        src={hikingStyle.image}
+                        src={getImageUrl(hikingStyle.image)}
                         alt={hikingStyle.title}
                         width={100}
                         height={60}
@@ -243,11 +320,9 @@ const ViewAllHiking = () => {
                     )}
                   </TableCell>
 
-                  <TableCell
-                    sx={{ border: "1px solid #ddd", textAlign: "center" }}
-                  >
+                  <TableCell sx={{ textAlign: "center" }}>
                     {editingId === hikingStyle._id ? (
-                      <Box sx={{ display: "flex", gap: 1 }}>
+                      <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
                         <Button
                           onClick={handleSaveClick}
                           variant="contained"
@@ -267,15 +342,15 @@ const ViewAllHiking = () => {
                         </Button>
                       </Box>
                     ) : (
-                      <Box sx={{ display: "flex", gap: 1 }}>
-                        <IconButton 
-                          color="primary" 
+                      <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+                        <IconButton
+                          color="primary"
                           onClick={() => handleEditClick(hikingStyle)}
                         >
                           <EditIcon />
                         </IconButton>
-                        <IconButton 
-                          color="error" 
+                        <IconButton
+                          color="error"
                           onClick={() => handleDelete(hikingStyle._id)}
                         >
                           <DeleteIcon />

@@ -6,11 +6,13 @@ import GroupIcon from "@mui/icons-material/Group";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import HikingIcon from '@mui/icons-material/Hiking';
+import HikingIcon from "@mui/icons-material/Hiking";
 import CategoryIcon from "@mui/icons-material/Category";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ArticleIcon from "@mui/icons-material/Article";
 import { useTheme } from "@mui/material/styles";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+
 import img from "../../assets/Images/thebagPacker-logo.png";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -22,6 +24,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [openSettings, setOpenSettings] = useState(false);
   const [openHomeMain, setOpenHomeMain] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
+  const [openPictures, setOpenPictures] = useState(false);
+
   const [openHiking, setOpenHiking] = useState(false);
 
   const handleNavigation = (path) => {
@@ -226,33 +230,62 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </ul>
         )}
 
-<div
-  onClick={() => {
-    if (!isOpen) toggleSidebar();
-    else setOpenHiking(!openHiking);
-  }}
-  style={dropdownStyle}
->
-  <HikingIcon style={iconStyle} /> {/* Replace with your hiking icon */}
-  {isOpen && <span>Hiking</span>}
-  {isOpen && (openHiking ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
-</div>
-{openHiking && isOpen && (
-  <ul style={nestedListStyle}>
-    <li
-      onClick={() => handleNavigation("/hiking/view-all")}
-      style={nestedLinkStyle}
-    >
-      View All Hiking
-    </li>
-    <li
-      onClick={() => handleNavigation("/hiking/add")}
-      style={nestedLinkStyle}
-    >
-      Add New Hiking
-    </li>
-  </ul>
-)}
+        <div
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenHiking(!openHiking);
+          }}
+          style={dropdownStyle}
+        >
+          <HikingIcon style={iconStyle} /> {/* Replace with your hiking icon */}
+          {isOpen && <span>Hiking</span>}
+          {isOpen && (openHiking ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+        </div>
+        {openHiking && isOpen && (
+          <ul style={nestedListStyle}>
+            <li
+              onClick={() => handleNavigation("/hiking/view-all")}
+              style={nestedLinkStyle}
+            >
+              View All Hiking
+            </li>
+            <li
+              onClick={() => handleNavigation("/hiking/add")}
+              style={nestedLinkStyle}
+            >
+              Add New Hiking
+            </li>
+          </ul>
+        )}
+
+        <div
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenPictures(!openPictures);
+          }}
+          style={dropdownStyle}
+        >
+          <PhotoLibraryIcon style={iconStyle} />{" "}
+          {/* Replace with your desired pictures icon */}
+          {isOpen && <span>Trip Pictures</span>}
+          {isOpen && (openPictures ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+        </div>
+        {openPictures && isOpen && (
+          <ul style={nestedListStyle}>
+            <li
+              onClick={() => handleNavigation("/pictures/view-all")}
+              style={nestedLinkStyle}
+            >
+              View All Pictures
+            </li>
+            <li
+              onClick={() => handleNavigation("/pictures/add")}
+              style={nestedLinkStyle}
+            >
+              Add New Picture
+            </li>
+          </ul>
+        )}
 
         {/* Settings Dropdown */}
         <div

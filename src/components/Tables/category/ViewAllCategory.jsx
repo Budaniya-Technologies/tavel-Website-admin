@@ -27,6 +27,13 @@ const ViewAllCategory = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const navigate = useNavigate();
 
+  const ipURL = import.meta.env.VITE_API_URL;
+  const baseURL = ipURL.endsWith("/") ? ipURL.slice(0, -1) : ipURL;
+
+  const getImageUrl = (path) => {
+    return path?.startsWith("http") ? path : `${baseURL}${path}`;
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -36,7 +43,6 @@ const ViewAllCategory = () => {
     try {
       const response = await apiGet(getCategoriesAPI);
       const data = response.data?.data || response.data || [];
-      console.log(data)
       setCategories(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -47,9 +53,7 @@ const ViewAllCategory = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this category?"
-    );
+    const confirm = window.confirm("Are you sure you want to delete this category?");
     if (!confirm) return;
 
     try {
@@ -159,7 +163,7 @@ const ViewAllCategory = () => {
                     >
                       {category?.icon ? (
                         <img
-                          src={category.icon}
+                          src={getImageUrl(category.icon)}
                           alt="icon"
                           style={{
                             width: 30,
@@ -183,14 +187,10 @@ const ViewAllCategory = () => {
                         <Table size="small" sx={{ backgroundColor: "#fafafa" }}>
                           <TableHead>
                             <TableRow>
-                              <TableCell
-                                sx={{ fontWeight: "bold", textAlign: "center" }}
-                              >
+                              <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
                                 Name
                               </TableCell>
-                              <TableCell
-                                sx={{ fontWeight: "bold", textAlign: "center" }}
-                              >
+                              <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
                                 Image
                               </TableCell>
                             </TableRow>
@@ -205,7 +205,7 @@ const ViewAllCategory = () => {
                                   <TableCell sx={{ textAlign: "center" }}>
                                     {sub.image ? (
                                       <img
-                                        src={sub.image}
+                                        src={getImageUrl(sub.image)}
                                         alt={sub.name}
                                         style={{
                                           maxWidth: "100px",

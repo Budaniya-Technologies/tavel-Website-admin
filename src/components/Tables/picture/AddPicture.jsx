@@ -13,59 +13,59 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { apiPost } from "../../../utils/http";
 
-const AddHomeAPI = "apiAdmin/v1/hiking-style";
+const AddHomeAPI = "apiAdmin/v1/trip-picture";
 
-const AddHiking = () => {
+const AddPicture = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    imageUrl: "",
-    imageFile: null,
+    name: "",
+    imageUrl: null,
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, name: e.target.value });
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, imageFile: e.target.files[0], imageUrl: "" });
+    setFormData({ ...formData, imageUrl: e.target.files[0] });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.imageUrl) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+  
     setLoading(true);
-
+  
     try {
       const data = new FormData();
-      data.append("title", formData.title);
-      data.append("description", formData.description);
-      if (formData.imageFile) {
-        data.append("image", formData.imageFile);
-      } else {
-        data.append("image", formData.imageUrl);
-      }
-
+      data.append("name", formData.name);
+      data.append("imageUrl", formData.imageUrl); // <-- key fix
+  
       const response = await apiPost(AddHomeAPI, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      console.log("API Response:", response.data);
-      toast.success("Hiking content created successfully!", {
+  
+      const imagePath = response?.data?.doc?.imageUrl || "";
+  
+      toast.success("Trip picture added successfully!", {
         position: "top-right",
         autoClose: 3000,
       });
-
+  
+      console.log("Uploaded Image Path:", imagePath);
+  
       setTimeout(() => {
-        navigate("/hiking/view-all");
+        navigate("/pictures/view-all");
       }, 3000);
     } catch (err) {
       console.error("API Error:", err);
-      toast.error("Failed to create hiking content.", {
+      toast.error("Failed to create trip picture.", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -75,12 +75,7 @@ const AddHiking = () => {
   };
 
   const handleCancel = () => {
-    setFormData({
-      title: "",
-      description: "",
-      imageUrl: "",
-      imageFile: null,
-    });
+    setFormData({ name: "", imageUrl: null });
   };
 
   return (
@@ -99,58 +94,32 @@ const AddHiking = () => {
         align="center"
         sx={{ color: "rgb(63, 81, 181)", fontWeight: "bold", mb: 3 }}
       >
-        Create Hiking Content
+        Upload Trip Picture
       </Typography>
       <Paper sx={{ padding: 3 }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <TextField
-                label="title"
-                name="title"
+                label="Name"
+                name="name"
                 variant="outlined"
                 fullWidth
-                value={formData.title}
+                value={formData.name}
                 onChange={handleChange}
                 required
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                name="description"
-                variant="outlined"
-                fullWidth
-                multiline
-                minRows={3}
-                value={formData.description}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                label="Image URL (optional)"
-                name="imageUrl"
-                variant="outlined"
-                fullWidth
-                value={formData.imageUrl}
-                onChange={handleChange}
-                disabled={Boolean(formData.imageFile)}
               />
             </Grid>
 
             <Grid item xs={12}>
               <Typography variant="body2" gutterBottom>
-                Or Upload Image File:
+                Upload Image File:
               </Typography>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                disabled={Boolean(formData.imageUrl)}
+                required
               />
             </Grid>
           </Grid>
@@ -173,4 +142,4 @@ const AddHiking = () => {
   );
 };
 
-export default AddHiking;
+export default AddPicture;
