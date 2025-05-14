@@ -20,6 +20,8 @@ import ViewAllhiking from "./components/Tables/hiking/ViewAllhiking";
 import AddHiking from "./components/Tables/hiking/AddHiking";
 import ViewAllPicture from "./components/Tables/picture/ViewAllPicture";
 import AddPicture from "./components/Tables/picture/AddPicture";
+import ViewReview from "./components/Tables/reviews/ViewReview";
+import AddReview from "./components/Tables/reviews/AddReview";
 
 function AppRouter() {
   return (
@@ -47,6 +49,8 @@ function AppRouter() {
             <Route path="/hiking/add" element={<AddHiking />} />
             <Route path="/pictures/view-all" element={<ViewAllPicture />} />
             <Route path="/pictures/add" element={<AddPicture />} />
+            <Route path="/reviews/view" element={<ViewReview />} />
+            <Route path="/reviews/add" element={<AddReview />} />
           </Route>
         {/* </Route> */}
         <Route path="/register" element={<Register />} />

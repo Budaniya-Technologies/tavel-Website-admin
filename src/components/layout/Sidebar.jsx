@@ -7,12 +7,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HikingIcon from "@mui/icons-material/Hiking";
+import CommentIcon from '@mui/icons-material/Comment';
 import CategoryIcon from "@mui/icons-material/Category";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ArticleIcon from "@mui/icons-material/Article";
 import { useTheme } from "@mui/material/styles";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-
 import img from "../../assets/Images/thebagPacker-logo.png";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -25,13 +25,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [openHomeMain, setOpenHomeMain] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [openPictures, setOpenPictures] = useState(false);
+  const [openReviews, setOpenReviews] = useState(false);
 
   const [openHiking, setOpenHiking] = useState(false);
 
   const handleNavigation = (path) => {
     if (!isOpen) {
       toggleSidebar(); // Open sidebar first
-      setTimeout(() => navigate(path), 300); // Delay navigation slightly for smooth transition
+      setTimeout(() => navigate(path), 300);
     } else {
       navigate(path);
     }
@@ -283,6 +284,36 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               style={nestedLinkStyle}
             >
               Add New Picture
+            </li>
+          </ul>
+        )}
+
+        {/* Reviews Dropdown */}
+        <div
+          onClick={() => {
+            if (!isOpen) toggleSidebar();
+            else setOpenReviews(!openReviews);
+          }}
+          style={dropdownStyle}
+        >
+          <CommentIcon style={iconStyle} />{" "}
+          {/* Replace with your desired icon */}
+          {isOpen && <span>Reviews</span>}
+          {isOpen && (openReviews ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+        </div>
+        {openReviews && isOpen && (
+          <ul style={nestedListStyle}>
+            <li
+              onClick={() => handleNavigation("/reviews/view")}
+              style={nestedLinkStyle}
+            >
+              View Reviews
+            </li>
+            <li
+              onClick={() => handleNavigation("/reviews/add")}
+              style={nestedLinkStyle}
+            >
+              Add Review
             </li>
           </ul>
         )}

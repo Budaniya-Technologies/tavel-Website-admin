@@ -16,10 +16,10 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { apiGet, apiDelete } from "../../../utils/http";
 
-const getHikingStyleAPI = "apiAdmin/v1/trip-picture";
-const deleteHikingStyleAPI = "apiAdmin/v1/trip-picture";
+const getHikingStyleAPI = "apiAdmin/v1/testimonial";
+const deleteHikingStyleAPI = "apiAdmin/v1/testimonial";
 
-const ViewAllPicture = () => {
+const ViewReview = () => {
   const [hikingStyles, setHikingStyles] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -83,14 +83,14 @@ const ViewAllPicture = () => {
           margin: "30px",
         }}
       >
-        View Pictures
+        View Reviews
       </Typography>
 
       <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 3 }}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow sx={{ backgroundColor: "#f4f4f4" }}>
-              {["#", "Title", "Image", "Action"].map(
+              {["#", "Title", "Description", "Rating", "Image", "Action"].map(
                 (head) => (
                   <TableCell
                     key={head}
@@ -132,8 +132,14 @@ const ViewAllPicture = () => {
                     {style.name}
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
+                    {style.description}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
+                    <Rating value={style.rating} precision={0.5} readOnly />
+                  </TableCell>
+                  <TableCell sx={{ textAlign: "center" }}>
                     <img
-                      src={getImageUrl(style.imageUrl)}
+                      src={getImageUrl(style.profileImage)}
                       alt={style.name}
                       width={100}
                       height={60}
@@ -158,4 +164,4 @@ const ViewAllPicture = () => {
   );
 };
 
-export default ViewAllPicture;
+export default ViewReview;
